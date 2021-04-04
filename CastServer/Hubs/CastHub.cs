@@ -26,7 +26,7 @@ namespace CastServer.Hubs
         public async void UpdateScreen(string base64 , int r,int c)
         {
             Console.WriteLine("received " + r + " " + c);
-            await Clients.All.SendAsync("UpdateScreen",base64,r,c);
+            await Clients.Others.SendAsync("UpdateScreen",base64,r,c);
         }
     }
 }
