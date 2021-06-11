@@ -1,0 +1,12 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    HashSet<string> rooms = ViewBag.rooms;
+}
+
+<h1>Index</h1>
+@foreach(var room in rooms)
+            {
+                @room
+    <hr />
+            }
