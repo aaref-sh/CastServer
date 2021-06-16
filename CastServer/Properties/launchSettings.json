@@ -19,8 +19,8 @@
     },
     "CastServer": {
       "commandName": "Project",
-      "launchBrowser": true,
-      "launchUrl": "weatherforecast",
+      "launchBrowser": false,
+      "launchUrl": "api/CheckApi",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

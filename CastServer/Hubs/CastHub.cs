@@ -30,12 +30,13 @@ namespace CastServer.Hubs
         static Dictionary<string, StreamServer> servers = new Dictionary<string, StreamServer>();
         static Dictionary<string, int> ports = new Dictionary<string, int>();
         static Dictionary<string, string> names = new Dictionary<string, string>();
-        static HashSet<string> teachers = new HashSet<string>();
+        public static Dictionary<string, string> sessions = new Dictionary<string, string>();
         string group;
 
-        public static HashSet<int> PortSet = new HashSet<int>();
-        public static HashSet<string> GroupSet = new HashSet<string>();
-        private static Random random = new Random();
+        static HashSet<string> RoomSet = new HashSet<string>();
+        static HashSet<int> PortSet = new HashSet<int>();
+        static HashSet<string> GroupSet = new HashSet<string>();
+        static Random random = new Random();
         static string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz0123456789";
 
         public override async Task OnConnectedAsync()
@@ -48,30 +49,18 @@ namespace CastServer.Hubs
         {
             string id = Context.ConnectionId;
             Console.WriteLine(id + " disonnected");
-            names.Remove(Context.ConnectionId);
-            if (teachers.Contains(id)) teacherdisconnected(id);
-            await RemoveFromGroup(id);
+            try
+            {
+                names.Remove(Context.ConnectionId);
+                await RemoveFromGroup(id);
+            }
+            catch { }
             await base.OnDisconnectedAsync(e);
         }
-        public void SetName(string name)=> names.Add(Context.ConnectionId, name);
-        void teacherdisconnected(string id)
-        {
-            group = groupof[id];
-            var port = ports[group];
-            var server = servers[group];
-            server.disconnect();
-
-            teachers.Remove(id);
-            servers.Remove(group);
-            ports.Remove(group);
-            messages.Remove(group);
-            GroupSet.Remove(group);
-            PortSet.Remove(port);
-            LastScreen.Remove(group);
-
-        }
+        public void SetName(string name) => names.Add(Context.ConnectionId, name);
+        public string GetGroupId(string room_name) => sessions[room_name];
         public int getport(string groupname) => ports[groupname];
-        
+
         public async Task getMessages()
         {
             group = groupof[Context.ConnectionId];
@@ -100,22 +89,37 @@ namespace CastServer.Hubs
                 }
             return inUse;
         }
-        public string teacherconnected()
+        public void DeleteRoom(string room_name)
         {
-            names.Add(Context.ConnectionId, "Teacher");
-            teachers.Add(Context.ConnectionId);
+            RoomSet.Remove(room_name);
+            var group = sessions[room_name];
+            sessions.Remove(room_name);
+            LastScreen.Remove(group);
+            messages.Remove(group);
+            servers[group].ConnectToServer();
+            servers[group].disconnect();
+            servers.Remove(group);
+            GroupSet.Remove(group);
+            PortSet.Remove(ports[group]);
+            ports.Remove(group);
+        }
+        public bool CreateRoom(string room_name)
+        {
             string groupName;
+            int newport;
+            if (RoomSet.Contains(room_name)) return false;
+            RoomSet.Add(room_name);
             while (true)
             {
                 groupName = RandomString(12);
                 if (!GroupSet.Contains(groupName)) break;
             }
+            sessions[room_name] = groupName;
             Console.WriteLine(groupName);
             GroupSet.Add(groupName);
-            int newport;
             while (true)
             {
-                newport = random.Next(1000, 9000);
+                newport = random.Next(1000, 65000);
                 if (!PortSet.Contains(newport) && !PortInUse(newport)) break;
             }
             PortSet.Add(newport);
@@ -130,7 +134,7 @@ namespace CastServer.Hubs
             servers.Add(groupName, streamServer);
             streamServer.Init();
             streamServer.ConnectToServer();
-            return groupName;
+            return true;
         }
         public async Task getscreen()
         {
@@ -140,12 +144,8 @@ namespace CastServer.Hubs
                 for (int i = 0; i < 10; i++)
                     for (int j = 0; j < 10; j++)
                         await Clients.Client(Context.ConnectionId).SendAsync("UpdateScreen",
-                            LastScreen[group][i, j].ms,
-                            i, j,
-                            LastScreen[group][i, j].encrypted,
-                            LastScreen[group][i, j].height,
-                            LastScreen[group][i, j].width
-                            );
+                            LastScreen[group][i, j].ms, i, j, LastScreen[group][i, j].encrypted,
+                            LastScreen[group][i, j].height, LastScreen[group][i, j].width );
             }
             catch { }
         }
@@ -184,11 +184,6 @@ namespace CastServer.Hubs
             LastScreen[group][r, c].encrypted = encrypted;
 
             await Clients.OthersInGroup(group).SendAsync("UpdateScreen", ms, r, c, encrypted, height, width);
-        }
-        public async void play(byte[] b)
-        {
-            group = groupof[Context.ConnectionId];
-            await Clients.OthersInGroup(group).SendAsync("play", b);
         }
     }
 }
