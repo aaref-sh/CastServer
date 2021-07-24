@@ -2,6 +2,10 @@
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
+    "iis": {
+      "applicationUrl": "http://192.168.1.111/CastServer",
+      "sslPort": 0
+    },
     "iisExpress": {
       "applicationUrl": "http://localhost:48937",
       "sslPort": 44373
@@ -19,12 +23,16 @@
     },
     "CastServer": {
       "commandName": "Project",
-      "launchBrowser": false,
       "launchUrl": "api/CheckApi",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://192.168.1.111:5000"
+      "nativeDebugging": false,
+      "applicationUrl": "http://localhost"
+    },
+    "Deploy": {
+      "commandName": "Project",
+      "sqlDebugging": true
     }
   }
 }

@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="TCPClient">
+      <HintPath>C:\Users\Muhammad\Desktop\crosseder\TCPClient.dll</HintPath>
+    </Reference>
+    <Reference Include="TCPServer">
+      <HintPath>C:\Users\Muhammad\Desktop\crosseder\TCPServer.dll</HintPath>
+    </Reference>
+    <Reference Include="WinSound">
+      <HintPath>C:\Users\Muhammad\Desktop\crosseder\WinSound.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

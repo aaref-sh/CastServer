@@ -14,7 +14,11 @@ namespace CastServer.Controllers
     public class RoomsController : ControllerBase
     {
         [HttpPost]
-        public List<string> get_rooms() => CastHub.sessions.Keys.ToList();
+        public List<string> GetRooms() => CastHub.sessions.Keys.ToList();
+        [HttpPost]
+        public bool CreateRoom(room room) => CastHub.CreateRoom(room.room_name);
+        [HttpPost]
+        public void DeleteRoom(room room) => CastHub.DeleteRoom(room.room_name);
         [HttpGet]
         public string CheckApi() => "This Api working fine";
     }
