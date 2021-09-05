@@ -28,7 +28,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "nativeDebugging": false,
-      "applicationUrl": "http://localhost"
+      "applicationUrl": "http://192.168.1.111"
     },
     "Deploy": {
       "commandName": "Project",

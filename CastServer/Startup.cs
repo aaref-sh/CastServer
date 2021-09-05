@@ -28,6 +28,7 @@ namespace CastServer
         {
             services.AddControllers();
             services.AddSignalR();
+            services.AddControllersWithViews();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,6 +48,12 @@ namespace CastServer
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
             app.UseEndpoints(endpoints =>
             {
