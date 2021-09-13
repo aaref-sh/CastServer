@@ -137,7 +137,7 @@ namespace CastServer.Hubs
             GroupSet.Add(groupName);
             while (true)
             {
-                newport = random.Next(1000, 65000);
+                newport = random.Next(1024, 65000);
                 if (!PortSet.Contains(newport) && !PortInUse(newport)) break;
             }
             PortSet.Add(newport);
